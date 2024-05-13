@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Video Call</title>
+</head>
+<body>
+<video id="localVideo" autoplay muted></video>
+<video id="remoteVideo" autoplay></video>
+<script>
+  const localVideo = document.getElementById('localVideo');
+  const remoteVideo = document.getElementById('remoteVideo');
+  const peerConnection = new RTCPeerConnection();
+  let ws = new WebSocket('ws://localhost:9002');
+
+  ws.onmessage = function(message) {
+    const data = JSON.parse(message.data);
+    if (data.sdp) {
+      peerConnection.setRemoteDescription(new RTCSessionDescription(data.sdp));
+    } else if (data.candidate) {
+      peerConnection.addIceCandidate(new RTCIceCandidate(data.candidate));
+    }
+  };
+
+  navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+    .then(stream => {
+      localVideo.srcObject = stream;
+      stream.getTracks().forEach(track => peerConnection.addTrack(track, stream));
+    })
+    .catch(error => console.error('Error accessing media devices.', error));
+
+  peerConnection.onicecandidate = function(event) {
+    if (event.candidate) {
+      ws.send(JSON.stringify({ 'candidate': event.candidate }));
+    }
+  };
+
+  peerConnection.ontrack = function(event) {
+    remoteVideo.srcObject = event.streams[0];
+  };
+
+  peerConnection.createOffer()
+    .then(offer => peerConnection.setLocalDescription(offer))
+    .then(() => {
+      ws.send(JSON.stringify({ 'sdp': peerConnection.localDescription }));
+    });
+</script>
+</body>
+</html>
