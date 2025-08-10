@@ -1,49 +1,319 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
-<meta charset="UTF-8">
-<title>Video Call</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fynex Accountants – Stress-free Tax &amp; Smart Advisory</title>
+  <meta name="description" content="Fynex Accountants provides tax compliance, bookkeeping, business advisory, and entity setup services across Australia." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'sans-serif'] }
+        }
+      }
+    }
+  </script>
 </head>
-<body>
-<video id="localVideo" autoplay muted></video>
-<video id="remoteVideo" autoplay></video>
-<script>
-  const localVideo = document.getElementById('localVideo');
-  const remoteVideo = document.getElementById('remoteVideo');
-  const peerConnection = new RTCPeerConnection();
-  let ws = new WebSocket('ws://localhost:9002');
+<body class="font-sans antialiased text-gray-800">
+  <!-- Splash Screen -->
+  <div id="splash" class="fixed inset-0 flex items-center justify-center bg-indigo-900 text-white z-50 transition-opacity duration-700">
+    <div class="text-center animate-pulse">
+      <div class="text-3xl font-bold">Fynex</div>
+      <p class="mt-4 text-lg">Stress-free Tax, Smart Advisory, and Bookkeeping that just works</p>
+    </div>
+  </div>
 
-  ws.onmessage = function(message) {
-    const data = JSON.parse(message.data);
-    if (data.sdp) {
-      peerConnection.setRemoteDescription(new RTCSessionDescription(data.sdp));
-    } else if (data.candidate) {
-      peerConnection.addIceCandidate(new RTCIceCandidate(data.candidate));
-    }
-  };
+  <!-- WhatsApp Floating Button -->
+  <a href="https://wa.me/61735557720" class="md:hidden fixed bottom-4 right-4 bg-emerald-500 text-white p-4 rounded-full shadow-lg" aria-label="WhatsApp Chat">
+    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12c0 2.116.553 4.072 1.518 5.77L0 24l6.407-1.68A11.93 11.93 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0Zm0 22a9.94 9.94 0 0 1-5.112-1.42l-.366-.22-3.796.996 1.014-3.702-.238-.38A9.942 9.942 0 0 1 2 12C2 6.486 6.486 2 12 2s10 4.486 10 10-4.486 10-10 10Zm4.833-7.005c-.263-.131-1.556-.768-1.797-.855-.241-.087-.417-.131-.593.131-.175.263-.681.855-.835 1.03-.153.175-.307.197-.57.066-.263-.131-1.108-.408-2.113-1.302-.781-.696-1.31-1.557-1.463-1.82-.153-.263-.016-.405.115-.536.118-.118.263-.307.394-.46.131-.153.175-.263.263-.438.087-.175.044-.329-.022-.46-.065-.131-.593-1.427-.813-1.955-.214-.514-.43-.444-.593-.452l-.507-.009c-.175 0-.46.065-.702.329-.241.263-.921.9-.921 2.197s.944 2.549 1.076 2.725c.131.175 1.857 2.84 4.503 3.979.63.272 1.12.435 1.504.557.632.201 1.207.173 1.662.105.507-.075 1.556-.636 1.777-1.251.219-.615.219-1.143.153-1.251-.065-.109-.24-.175-.503-.306Z"/></svg>
+  </a>
 
-  navigator.mediaDevices.getUserMedia({ video: true, audio: true })
-    .then(stream => {
-      localVideo.srcObject = stream;
-      stream.getTracks().forEach(track => peerConnection.addTrack(track, stream));
-    })
-    .catch(error => console.error('Error accessing media devices.', error));
+  <!-- Header -->
+  <header class="bg-white shadow fixed top-0 inset-x-0 z-40">
+    <div class="max-w-7xl mx-auto flex items-center justify-between p-4">
+      <div class="flex items-center space-x-2">
+        <span class="text-2xl font-bold text-indigo-900">Fynex</span>
+      </div>
+      <nav id="nav" class="hidden md:flex space-x-6 text-indigo-900">
+        <a href="#services" class="hover:text-emerald-600">Services</a>
+        <a href="#industries" class="hover:text-emerald-600">Industries</a>
+        <a href="#reviews" class="hover:text-emerald-600">Reviews</a>
+        <a href="#blog" class="hover:text-emerald-600">Blog</a>
+        <a href="#contact" class="hover:text-emerald-600">Contact</a>
+      </nav>
+      <div class="flex items-center space-x-4">
+        <a href="https://wa.me/61735557720" class="hidden md:inline-block bg-emerald-500 text-white px-3 py-2 rounded">WhatsApp</a>
+        <a href="#contact" class="hidden md:inline-block bg-indigo-900 text-white px-3 py-2 rounded">Free Consult</a>
+        <button id="menu-btn" class="md:hidden focus:outline-none">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
+      </div>
+    </div>
+    <div id="mobile-menu" class="md:hidden hidden border-t border-gray-200 bg-white">
+      <a href="#services" class="block px-4 py-2 hover:bg-gray-50">Services</a>
+      <a href="#industries" class="block px-4 py-2 hover:bg-gray-50">Industries</a>
+      <a href="#reviews" class="block px-4 py-2 hover:bg-gray-50">Reviews</a>
+      <a href="#blog" class="block px-4 py-2 hover:bg-gray-50">Blog</a>
+      <a href="#contact" class="block px-4 py-2 hover:bg-gray-50">Contact</a>
+    </div>
+  </header>
 
-  peerConnection.onicecandidate = function(event) {
-    if (event.candidate) {
-      ws.send(JSON.stringify({ 'candidate': event.candidate }));
-    }
-  };
+  <!-- Hero Section -->
+  <section id="home" class="pt-24 bg-cover bg-center" style="background-image:url('https://images.unsplash.com/photo-1554224154-22dec7ec8818?auto=format&fit=crop&w=1400&q=60');">
+    <div class="max-w-7xl mx-auto text-center text-white py-32 px-4">
+      <h1 class="text-4xl md:text-5xl font-bold">Stress-free Tax &amp; Smart Advisory</h1>
+      <p class="mt-4 text-lg">Bookkeeping that just works.</p>
+      <div class="mt-8 space-x-4">
+        <a href="#contact" class="bg-emerald-500 px-5 py-3 rounded text-white">Book Now</a>
+        <a href="https://wa.me/61735557720" class="bg-white text-indigo-900 px-5 py-3 rounded">WhatsApp</a>
+      </div>
+      <p class="mt-6">Call <a href="tel:+61735557720" class="underline">+61 7 3555 7720</a> or email <a href="mailto:hello@fynex.com.au" class="underline">hello@fynex.com.au</a></p>
+    </div>
+  </section>
 
-  peerConnection.ontrack = function(event) {
-    remoteVideo.srcObject = event.streams[0];
-  };
+  <!-- Trust Bar -->
+  <section class="py-8 bg-indigo-50">
+    <div class="max-w-7xl mx-auto flex flex-wrap justify-center gap-4 text-indigo-900">
+      <div class="flex items-center"><svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg><span class="ml-2">Brisbane</span></div>
+      <div class="flex items-center"><svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg><span class="ml-2">Gold Coast</span></div>
+      <div class="flex items-center"><svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg><span class="ml-2">Sunshine Coast</span></div>
+      <div class="flex items-center"><svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg><span class="ml-2">Ipswich</span></div>
+      <div class="flex items-center"><svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg><span class="ml-2">Caboolture</span></div>
+      <div class="flex items-center"><svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg><span class="ml-2">Toowoomba</span></div>
+      <div class="flex items-center"><svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg><span class="ml-2">Sydney</span></div>
+      <div class="flex items-center"><svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg><span class="ml-2">Melbourne</span></div>
+      <div class="flex items-center"><svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg><span class="ml-2">Adelaide</span></div>
+      <div class="flex items-center"><svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg><span class="ml-2">Perth</span></div>
+    </div>
+  </section>
 
-  peerConnection.createOffer()
-    .then(offer => peerConnection.setLocalDescription(offer))
-    .then(() => {
-      ws.send(JSON.stringify({ 'sdp': peerConnection.localDescription }));
+  <!-- Services Section -->
+  <section id="services" class="py-16">
+    <div class="max-w-7xl mx-auto text-center px-4">
+      <h2 class="text-3xl font-bold text-indigo-900">Our Services</h2>
+      <div class="mt-8 grid gap-8 md:grid-cols-3">
+        <div class="p-6 border rounded-lg">
+          <h3 class="text-xl font-semibold">Tax &amp; Compliance</h3>
+          <p class="mt-2 text-sm">Individual, partnership, company &amp; trust returns, BAS/IAS, PAYG, FBT, ASIC compliance.</p>
+          <a href="#contact" class="mt-4 inline-block text-emerald-600">Learn More</a>
+        </div>
+        <div class="p-6 border rounded-lg">
+          <h3 class="text-xl font-semibold">Business Advisory</h3>
+          <p class="mt-2 text-sm">Structuring, cash flow, KPIs, risk management, growth strategies for SMEs and startups.</p>
+          <a href="#contact" class="mt-4 inline-block text-emerald-600">Learn More</a>
+        </div>
+        <div class="p-6 border rounded-lg">
+          <h3 class="text-xl font-semibold">Bookkeeping &amp; Payroll</h3>
+          <p class="mt-2 text-sm">Xero/MYOB/QuickBooks setup, bank reconciliations, STP, super, and payroll compliance.</p>
+          <a href="#contact" class="mt-4 inline-block text-emerald-600">Learn More</a>
+        </div>
+        <div class="p-6 border rounded-lg">
+          <h3 class="text-xl font-semibold">Companies &amp; Trusts</h3>
+          <p class="mt-2 text-sm">Entity setup, ASIC management, company secretarial and governance.</p>
+          <a href="#contact" class="mt-4 inline-block text-emerald-600">Learn More</a>
+        </div>
+        <div class="p-6 border rounded-lg">
+          <h3 class="text-xl font-semibold">Year-End &amp; Planning</h3>
+          <p class="mt-2 text-sm">Forecasting, budget planning, tax planning, proactive quarterly reviews.</p>
+          <a href="#contact" class="mt-4 inline-block text-emerald-600">Learn More</a>
+        </div>
+        <div class="p-6 border rounded-lg">
+          <h3 class="text-xl font-semibold">ATO Helpdesk</h3>
+          <p class="mt-2 text-sm">Lodge late returns, payment plans, Director ID guidance, ATO liaison.</p>
+          <a href="#contact" class="mt-4 inline-block text-emerald-600">Learn More</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Industries Section -->
+  <section id="industries" class="py-16 bg-indigo-50">
+    <div class="max-w-7xl mx-auto text-center px-4">
+      <h2 class="text-3xl font-bold text-indigo-900">Industries We Serve</h2>
+      <div class="mt-8 grid gap-6 md:grid-cols-4">
+        <div class="p-4 bg-white rounded shadow">Tradies &amp; Construction</div>
+        <div class="p-4 bg-white rounded shadow">E-commerce &amp; Retail</div>
+        <div class="p-4 bg-white rounded shadow">Healthcare</div>
+        <div class="p-4 bg-white rounded shadow">Hospitality</div>
+        <div class="p-4 bg-white rounded shadow">Logistics</div>
+        <div class="p-4 bg-white rounded shadow">Professional Services</div>
+        <div class="p-4 bg-white rounded shadow">Contractors</div>
+        <div class="p-4 bg-white rounded shadow">Startups</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Why Fynex Section -->
+  <section class="py-16">
+    <div class="max-w-5xl mx-auto text-center px-4">
+      <h2 class="text-3xl font-bold text-indigo-900">Why Fynex?</h2>
+      <ul class="mt-8 grid gap-4 md:grid-cols-2 text-left">
+        <li class="flex items-start"><svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-emerald-500 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg><span class="ml-2">Clear, proactive communication</span></li>
+        <li class="flex items-start"><svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-emerald-500 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg><span class="ml-2">Quick turnaround times</span></li>
+        <li class="flex items-start"><svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-emerald-500 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg><span class="ml-2">Full-service accounting under one roof</span></li>
+        <li class="flex items-start"><svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-emerald-500 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg><span class="ml-2">Industry-specific knowledge</span></li>
+        <li class="flex items-start"><svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-emerald-500 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg><span class="ml-2">Australia-wide service via online consultations</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Reviews Section -->
+  <section id="reviews" class="py-16 bg-indigo-50">
+    <div class="max-w-7xl mx-auto text-center px-4">
+      <h2 class="text-3xl font-bold text-indigo-900">What Clients Say</h2>
+      <div class="mt-8 grid gap-8 md:grid-cols-3">
+        <div class="p-6 bg-white rounded shadow">
+          <p>“Sincerest thanks for the excellent service we've received as clients.”</p>
+          <p class="mt-2 font-semibold">Sunil S. ★★★★★</p>
+        </div>
+        <div class="p-6 bg-white rounded shadow">
+          <p>“They helped restructure and save on tax while getting our books in order.”</p>
+          <p class="mt-2 font-semibold">Local Business Owner ★★★★★</p>
+        </div>
+        <div class="p-6 bg-white rounded shadow">
+          <p>“Clear, proactive advice and fast turnaround for our compliance.”</p>
+          <p class="mt-2 font-semibold">Startup Founder ★★★★★</p>
+        </div>
+      </div>
+      <div class="mt-8">
+        <div class="bg-white border rounded h-32 flex items-center justify-center">Google Reviews Widget</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Instagram Feed -->
+  <section class="py-16" id="instagram">
+    <div class="max-w-7xl mx-auto text-center px-4">
+      <h2 class="text-3xl font-bold text-indigo-900">Follow Us</h2>
+      <div class="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4">
+        <img src="https://source.unsplash.com/random/300x300?sig=1" alt="Instagram post 1" class="w-full h-full object-cover">
+        <img src="https://source.unsplash.com/random/300x300?sig=2" alt="Instagram post 2" class="w-full h-full object-cover">
+        <img src="https://source.unsplash.com/random/300x300?sig=3" alt="Instagram post 3" class="w-full h-full object-cover">
+        <img src="https://source.unsplash.com/random/300x300?sig=4" alt="Instagram post 4" class="w-full h-full object-cover">
+        <img src="https://source.unsplash.com/random/300x300?sig=5" alt="Instagram post 5" class="w-full h-full object-cover">
+        <img src="https://source.unsplash.com/random/300x300?sig=6" alt="Instagram post 6" class="w-full h-full object-cover">
+        <img src="https://source.unsplash.com/random/300x300?sig=7" alt="Instagram post 7" class="w-full h-full object-cover">
+        <img src="https://source.unsplash.com/random/300x300?sig=8" alt="Instagram post 8" class="w-full h-full object-cover">
+      </div>
+      <div class="mt-8">
+        <a href="https://instagram.com/fynexau" class="text-emerald-600">@fynexau</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Blog Section -->
+  <section id="blog" class="py-16 bg-indigo-50">
+    <div class="max-w-7xl mx-auto text-center px-4">
+      <h2 class="text-3xl font-bold text-indigo-900">Insights</h2>
+      <div class="mt-8 grid gap-8 md:grid-cols-3">
+        <article class="p-6 bg-white rounded shadow">
+          <h3 class="text-xl font-semibold">Director ID: What you must know in 2025</h3>
+          <p class="mt-2 text-sm">Compliance – 4 min read</p>
+          <a href="#" class="mt-4 inline-block text-emerald-600">Read More</a>
+        </article>
+        <article class="p-6 bg-white rounded shadow">
+          <h3 class="text-xl font-semibold">Choosing the right structure: Sole Trader vs Company vs Trust</h3>
+          <p class="mt-2 text-sm">Advisory – 6 min read</p>
+          <a href="#" class="mt-4 inline-block text-emerald-600">Read More</a>
+        </article>
+        <article class="p-6 bg-white rounded shadow">
+          <h3 class="text-xl font-semibold">Year-end checklist for busy business owners</h3>
+          <p class="mt-2 text-sm">Planning – 5 min read</p>
+          <a href="#" class="mt-4 inline-block text-emerald-600">Read More</a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Banner -->
+  <section class="py-16 bg-indigo-900 text-white text-center">
+    <h2 class="text-3xl font-bold">Ready to get started?</h2>
+    <p class="mt-4">Book a call or message via WhatsApp</p>
+    <div class="mt-8 space-x-4">
+      <a href="#contact" class="bg-emerald-500 px-5 py-3 rounded">Book a Call</a>
+      <a href="https://wa.me/61735557720" class="bg-white text-indigo-900 px-5 py-3 rounded">WhatsApp</a>
+    </div>
+  </section>
+
+  <!-- Contact Section -->
+  <section id="contact" class="py-16">
+    <div class="max-w-7xl mx-auto grid md:grid-cols-2 gap-8 px-4">
+      <div>
+        <h2 class="text-3xl font-bold text-indigo-900">Contact Us</h2>
+        <p class="mt-4">Office 4, 1048 Beaudesert Road, Brisbane, QLD 4108</p>
+        <p class="mt-2">Phone: <a href="tel:+61735557720" class="text-emerald-600">+61 7 3555 7720</a></p>
+        <p class="mt-2">Email: <a href="mailto:hello@fynex.com.au" class="text-emerald-600">hello@fynex.com.au</a></p>
+      </div>
+      <form action="#" method="POST" class="space-y-4"> <!-- Backend integration required -->
+        <input type="text" name="name" placeholder="Name" class="w-full p-3 border rounded" required>
+        <input type="email" name="email" placeholder="Email" class="w-full p-3 border rounded" required>
+        <textarea name="message" rows="4" placeholder="Message" class="w-full p-3 border rounded" required></textarea>
+        <button type="submit" class="bg-emerald-500 text-white px-5 py-3 rounded">Send</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-indigo-900 text-white py-12">
+    <div class="max-w-7xl mx-auto grid md:grid-cols-4 gap-8 px-4">
+      <div>
+        <h3 class="font-bold text-lg">Fynex Accountants</h3>
+        <p class="mt-4 text-sm">Stress-free Tax, Smart Advisory, and Bookkeeping that just works.</p>
+      </div>
+      <div>
+        <h4 class="font-semibold">Services</h4>
+        <ul class="mt-4 space-y-2 text-sm">
+          <li><a href="#services" class="hover:underline">Tax &amp; Compliance</a></li>
+          <li><a href="#services" class="hover:underline">Business Advisory</a></li>
+          <li><a href="#services" class="hover:underline">Bookkeeping &amp; Payroll</a></li>
+          <li><a href="#services" class="hover:underline">Companies &amp; Trusts</a></li>
+          <li><a href="#services" class="hover:underline">Year-End &amp; Planning</a></li>
+          <li><a href="#services" class="hover:underline">ATO Helpdesk</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="font-semibold">Quick Links</h4>
+        <ul class="mt-4 space-y-2 text-sm">
+          <li><a href="#industries" class="hover:underline">Industries</a></li>
+          <li><a href="#reviews" class="hover:underline">Reviews</a></li>
+          <li><a href="#blog" class="hover:underline">Blog</a></li>
+          <li><a href="#contact" class="hover:underline">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="font-semibold">Contact</h4>
+        <ul class="mt-4 space-y-2 text-sm">
+          <li>+61 7 3555 7720</li>
+          <li>hello@fynex.com.au</li>
+          <li>Office 4, 1048 Beaudesert Road<br>Brisbane, QLD 4108</li>
+        </ul>
+      </div>
+    </div>
+    <div class="mt-8 text-center text-sm">&copy; 2025 Fynex Accountants. All rights reserved.</div>
+  </footer>
+
+  <!-- Scripts -->
+  <script>
+    // Splash screen fade
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        const splash = document.getElementById('splash');
+        splash.classList.add('opacity-0');
+        splash.addEventListener('transitionend', () => splash.remove());
+      }, 1500);
     });
-</script>
+    // Mobile menu toggle
+    const menuBtn = document.getElementById('menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+    menuBtn.addEventListener('click', () => {
+      mobileMenu.classList.toggle('hidden');
+    });
+  </script>
+  <!-- Google Analytics placeholder -->
 </body>
 </html>
